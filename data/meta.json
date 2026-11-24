@@ -1,0 +1,121 @@
+{
+ "events": {
+  "1": "The 2013 DreamHack SteelSeries CS:GO Championship",
+  "2": "The Valve Test Championship",
+  "3": "The 2014 EMS One Katowice CS:GO Championship",
+  "4": "ESL One Cologne 2014 CS:GO Championship",
+  "5": "The 2014 DreamHack CS:GO Championship",
+  "6": "2015 ESL One Katowice CS:GO Championship",
+  "7": "2015 ESL One Cologne CS:GO Championship",
+  "8": "2015 DreamHack Cluj-Napoca CS:GO Championship",
+  "9": "2016 MLG Columbus CS:GO Championship",
+  "10": "2016 ESL One Cologne CS:GO Championship",
+  "11": "2017 ELEAGUE Atlanta CS:GO Championship",
+  "12": "2017 PGL Krakow CS:GO Championship",
+  "13": "2018 ELEAGUE Boston CS:GO Championship",
+  "14": "2018 FACEIT London CS:GO Championship",
+  "15": "2019 IEM Katowice CS:GO Championship",
+  "16": "2019 StarLadder Berlin CS:GO Championship",
+  "17": "2020 CS:GO Regional Major Rankings",
+  "18": "2021 PGL Stockholm CS:GO Championship",
+  "19": "2022 PGL Antwerp CS:GO Championship",
+  "20": "IEM Rio 2022 CS:GO Championship",
+  "21": "BLAST.tv Paris 2023 CS:GO Championship",
+  "22": "PGL Copenhagen 2024 CS2 Major Championship",
+  "23": "Perfect World Shanghai 2024 CS2 Major Championship",
+  "24": "BLAST.tv Austin 2025 CS2 Major Championship",
+  "25": "StarLadder Budapest 2025 CS2 Major Championship",
+  "26": "IEM Cologne 2026 CS2 Major Championship",
+  "27": "PGL Singapore 2026 CS2 Major Championship"
+ },
+ "rarities": {
+  "default": {
+   "key": "default",
+   "value": 0,
+   "weapon": "Stock",
+   "generic": "Default",
+   "character": "Default",
+   "color": "#ded6cc"
+  },
+  "common": {
+   "key": "common",
+   "value": 1,
+   "weapon": "Consumer Grade",
+   "generic": "Base Grade",
+   "character": "",
+   "color": "#b0c3d9"
+  },
+  "uncommon": {
+   "key": "uncommon",
+   "value": 2,
+   "weapon": "Industrial Grade",
+   "generic": "Medium Grade",
+   "character": "",
+   "color": "#5e98d9"
+  },
+  "rare": {
+   "key": "rare",
+   "value": 3,
+   "weapon": "Mil-Spec Grade",
+   "generic": "High Grade",
+   "character": "Distinguished",
+   "color": "#4b69ff"
+  },
+  "mythical": {
+   "key": "mythical",
+   "value": 4,
+   "weapon": "Restricted",
+   "generic": "Remarkable",
+   "character": "Exceptional",
+   "color": "#8847ff"
+  },
+  "legendary": {
+   "key": "legendary",
+   "value": 5,
+   "weapon": "Classified",
+   "generic": "Exotic",
+   "character": "Superior",
+   "color": "#d32ce6"
+  },
+  "ancient": {
+   "key": "ancient",
+   "value": 6,
+   "weapon": "Covert",
+   "generic": "Extraordinary",
+   "character": "Master",
+   "color": "#eb4b4b"
+  },
+  "immortal": {
+   "key": "immortal",
+   "value": 7,
+   "weapon": "Contraband",
+   "generic": "Contraband",
+   "character": "Contraband",
+   "color": "#e4ae39"
+  },
+  "unusual": {
+   "key": "unusual",
+   "value": 99,
+   "weapon": null,
+   "generic": "★",
+   "character": null,
+   "color": "#ffd700"
+  }
+ },
+ "counts": {
+  "skins": 2248,
+  "stickers": 12335,
+  "patches": 112,
+  "graffiti": 147,
+  "charms": 143,
+  "music": 110,
+  "agents": 63,
+  "containers": 847,
+  "collectibles": 650,
+  "tools": 49,
+  "keys": 47,
+  "weapons": 76,
+  "collections": 97
+ },
+ "game_build": "ClientVersion=2000948\nServerVersion=2000948\nPatchVersion=1.42.0.0\nProductName=cs2\nappID=730\nServerAppID=2347773\nSourceRevision=11259529\nVersionDate=Nov 19 2026\nVersionTime=15:48:39\n"
+}
