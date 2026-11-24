@@ -4,7 +4,7 @@ from multiprocessing import Pool
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import lz4.block
 from PIL import Image
-from common import load, blocks, SITE, WORK
+from common import load, blocks, SITE, WORK, safe_path
 
 QUALITY = int(os.environ.get('WEBP_Q', '80'))
 BPP = {4: 4, 28: 4}          # uncompressed formats: bytes per pixel
@@ -72,7 +72,10 @@ vpk = None
 def work(job):
     global vpk
     out, src = job
-    dst = os.path.join(SITE, out)
+    try:
+        dst = safe_path(out)
+    except ValueError as e:
+        return out, f'ERR {e}'
     if os.path.exists(dst):
         return out, 'skip'
     if vpk is None:

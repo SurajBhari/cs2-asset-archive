@@ -2,7 +2,7 @@
 import json, os, struct, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import load, blocks, SITE, WORK
+from common import load, blocks, SITE, WORK, safe_path
 
 BITRATE = os.environ.get('MP3_BITRATE', '72k')
 vpk = load()
@@ -10,7 +10,10 @@ sounds = json.load(open(os.path.join(WORK, 'sounds.json')))
 
 
 def job(kit, name):
-    dst = f'{SITE}/audio/{kit}/{name}.mp3'
+    try:
+        dst = safe_path(f'audio/{kit}/{name}.mp3')
+    except ValueError as e:
+        return str(e)
     if os.path.exists(dst):
         return None
     d = vpk.read(f'sounds/music/{kit}/{name}.vsnd_c')

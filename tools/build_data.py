@@ -3,7 +3,7 @@ import json, os, re, sys
 from collections import defaultdict
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import kv
-from common import load, SITE, RAW, WORK, CS2_DIR
+from common import load, SITE, RAW, WORK, CS2_DIR, SAFE_OUT
 
 
 g = kv.parse(open(f'{RAW}/items_game.txt', encoding='utf-8').read(), multi=True)['items_game']
@@ -32,7 +32,7 @@ images = {}  # out relative path -> vpk path
 
 def image(econ_path, out):
     """econ_path like 'econ/weapon_cases/crate_valve_1' -> registers extraction, returns site path."""
-    if not econ_path:
+    if not econ_path or not SAFE_OUT.match(out):
         return None
     p = econ_path.lower().strip('/')
     if p.startswith('panorama/images/'):
@@ -356,7 +356,8 @@ sound_files = defaultdict(list)
 for f in FILES:
     if f.startswith('sounds/music/') and f.endswith('.vsnd_c') and f.count('/') == 3:
         _, _, kit, fn = f.split('/')
-        sound_files[kit].append(fn[:-len('.vsnd_c')])
+        if SAFE_OUT.match(f"audio/{kit}/{fn[:-len('.vsnd_c')]}.mp3"):
+            sound_files[kit].append(fn[:-len('.vsnd_c')])
 
 
 def sound_key(fn):

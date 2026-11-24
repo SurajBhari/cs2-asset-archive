@@ -37,7 +37,8 @@ jobs:
       - name: Check GameTracking-CS2 for a new commit
         id: check
         run: |
-          head=$(git ls-remote "https://github.com/$TRACKER" HEAD | cut -f1)
+          head=$(git ls-remote "https://github.com/$TRACKER" HEAD | cut -f1 | tr -d '')
+          if ! [[ "$head" =~ ^[0-9a-f]{40}$ ]]; then echo "Unexpected tracker HEAD: '$head'"; exit 1; fi
           last=$(curl -fsSL "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/.tracking-sha" || true)
           echo "tracker head: $head, last built: ${last:-none}"
           echo "sha=$head" >> "$GITHUB_OUTPUT"
@@ -70,8 +71,10 @@ jobs:
 
       - name: Fetch item text files from GameTracking-CS2
         if: steps.check.outputs.run == 'true'
+        env:
+          SHA: ${{ steps.check.outputs.sha }}
         run: |
-          base="https://raw.githubusercontent.com/$TRACKER/${{ steps.check.outputs.sha }}/game/csgo"
+          base="https://raw.githubusercontent.com/$TRACKER/$SHA/game/csgo"
           curl -fsSL -o "$WORK_DIR/raw/items_game.txt" "$base/pak01_dir/scripts/items/items_game.txt"
           curl -fsSL -o "$WORK_DIR/raw/csgo_english.txt" "$base/pak01_dir/resource/csgo_english.txt"
           curl -fsSL -o "$WORK_DIR/raw/steam.inf" "$base/steam.inf"
@@ -108,8 +111,9 @@ jobs:
         if: steps.check.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          SHA: ${{ steps.check.outputs.sha }}
         run: |
-          echo "${{ steps.check.outputs.sha }}" > .tracking-sha
+          echo "$SHA" > .tracking-sha
           build=$(grep -oP 'ClientVersion=\K\d+' "$STEAM_INF" || echo unknown)
           git add -A data img audio .tracking-sha
           if git diff --cached --quiet -- data img audio; then

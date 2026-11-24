@@ -12,6 +12,17 @@ SITE = os.environ.get('SITE_DIR', os.path.dirname(HERE))
 # Scratch space: raw text files, job lists, index cache.
 WORK = os.environ.get('WORK_DIR', os.path.join(HERE, '.work'))
 RAW = os.path.join(WORK, 'raw')
+
+# Output paths are built from names in upstream game data; only accept plain relative paths.
+import re  # noqa: E402
+SAFE_OUT = re.compile(r'^(img/[a-z0-9_-]+(/[a-z0-9_-]+)*\.webp|audio/[a-z0-9_-]+/[a-z0-9_-]+\.mp3)$', re.I)
+
+
+def safe_path(rel):
+    """Absolute path inside SITE for a generated asset, or ValueError if rel isn't a plain img/ or audio/ path."""
+    if not SAFE_OUT.match(rel) or '..' in rel:
+        raise ValueError(f'unsafe output path: {rel!r}')
+    return os.path.join(SITE, rel)
 os.makedirs(RAW, exist_ok=True)
 
 

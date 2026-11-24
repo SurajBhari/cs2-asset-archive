@@ -6,15 +6,15 @@ and nothing when everything is already extracted.
 """
 import json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import load, SITE, WORK
+from common import load, SITE, WORK, safe_path
 
 vpk = load()
 images = json.load(open(os.path.join(WORK, 'images.json')))
 sounds = json.load(open(os.path.join(WORK, 'sounds.json')))
 
-needed = [src for out, src in images.items() if not os.path.exists(os.path.join(SITE, out))]
+needed = [src for out, src in images.items() if not os.path.exists(safe_path(out))]
 needed += [f'sounds/music/{kit}/{name}.vsnd_c' for kit, names in sounds.items() for name in names
-           if not os.path.exists(os.path.join(SITE, 'audio', kit, f'{name}.mp3'))]
+           if not os.path.exists(safe_path(f'audio/{kit}/{name}.mp3'))]
 
 chunks = sorted({vpk.entries[p][0] for p in needed if vpk.entries[p][2] and vpk.entries[p][0] != 0x7FFF})
 print(f'{len(needed)} new files in {len(chunks)} chunks', file=sys.stderr)
