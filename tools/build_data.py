@@ -267,7 +267,7 @@ for w, pkn in sorted(combos):
     imgs = gen.get((w, pkn), {})
     out_img = None
     for wear in ('light', 'medium', 'heavy'):
-        if wear in imgs:
+        if wear in imgs and SAFE_OUT.match(f'img/skins/{w}/{pkn}.webp'):
             out_img = f'img/skins/{w}/{pkn}.webp'
             images[out_img] = imgs[wear]
             break

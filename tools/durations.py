@@ -1,6 +1,6 @@
 import json, subprocess, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import SITE
+from common import SITE, safe_path
 from concurrent.futures import ThreadPoolExecutor
 m = json.load(open(f'{SITE}/data/music.json', encoding='utf-8'))
 def dur(p):
@@ -8,7 +8,7 @@ def dur(p):
     return round(float(r.stdout.strip() or 0), 2)
 with ThreadPoolExecutor(12) as ex:
     for k in m:
-        paths = [f"{SITE}/audio/{k['name']}/{s}.mp3" for s in k['sounds']]
+        paths = [safe_path(f"audio/{k['name']}/{s}.mp3") for s in k['sounds']]
         k['durations'] = list(ex.map(dur, paths))
         k['sizes'] = [os.path.getsize(p) for p in paths]
 json.dump(m, open(f'{SITE}/data/music.json', 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))

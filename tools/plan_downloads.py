@@ -9,12 +9,20 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import load, SITE, WORK, safe_path
 
 vpk = load()
+
+
+def exists(rel):
+    try:
+        return os.path.exists(safe_path(rel))
+    except ValueError:
+        return True  # unsafe name: never download or write it
+
 images = json.load(open(os.path.join(WORK, 'images.json')))
 sounds = json.load(open(os.path.join(WORK, 'sounds.json')))
 
-needed = [src for out, src in images.items() if not os.path.exists(safe_path(out))]
+needed = [src for out, src in images.items() if not exists(out)]
 needed += [f'sounds/music/{kit}/{name}.vsnd_c' for kit, names in sounds.items() for name in names
-           if not os.path.exists(safe_path(f'audio/{kit}/{name}.mp3'))]
+           if not exists(f'audio/{kit}/{name}.mp3')]
 
 chunks = sorted({vpk.entries[p][0] for p in needed if vpk.entries[p][2] and vpk.entries[p][0] != 0x7FFF})
 print(f'{len(needed)} new files in {len(chunks)} chunks', file=sys.stderr)
