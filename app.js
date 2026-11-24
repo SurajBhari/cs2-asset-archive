@@ -100,8 +100,8 @@ function tileHTML(x, { link = true } = {}) {
   const img = x.image || collectionFallback(x);
   const tag = link ? "a" : "div";
   const kicker = t.kicker ? `<span class="tile-kicker">${t.kicker.startsWith("★") ? `<span class="star">★</span>${esc(t.kicker.slice(1))}` : esc(t.kicker)}</span>` : "";
-  return `<${tag} class="tile"${link ? ` href="${itemHref(x)}"` : ""} style="--r:${x.rarity?.color || "#4a5466"}">
-    <div class="tile-art">${img ? `<img src="${img}" alt="" loading="lazy" decoding="async">` : ""}</div>
+  return `<${tag} class="tile"${link ? ` href="${itemHref(x)}"` : ""} style="--r:${esc(x.rarity?.color || "#4a5466")}">
+    <div class="tile-art">${img ? `<img src="${esc(img)}" alt="" loading="lazy" decoding="async">` : ""}</div>
     <div class="tile-text">${kicker}<span class="tile-name">${esc(t.name)}</span>${t.sub ? `<span class="tile-sub${t.rar && x.rarity ? "" : " plain"}">${esc(t.sub)}</span>` : ""}</div></${tag}>`;
 }
 function collectionFallback(x) {
@@ -154,7 +154,7 @@ async function spin() {
       const caseLink = `<a href="#containers/${encodeURIComponent(c.id)}">${esc(c.title)}</a>`;
       $("#won").innerHTML = won.gold
         ? `<small>From the ${caseLink}</small><span class="rar" style="color:var(--gold)">★ Rare special item</span>, ${esc(c.rare_special || "a knife or gloves")}`
-        : `<small>From the ${caseLink}</small><a href="${itemHref(won)}">${esc(won.title)}</a> <span class="rar" style="color:${won.rarity.color}">${esc(won.rarity.name)}</span>`;
+        : `<small>From the ${caseLink}</small><a href="${itemHref(won)}">${esc(won.title)}</a> <span class="rar" style="color:${esc(won.rarity.color)}">${esc(won.rarity.name)}</span>`;
       $("#won").classList.remove("reveal");
       void $("#won").offsetWidth;
       $("#won").classList.add("reveal");
@@ -305,16 +305,16 @@ function tracksHTML(k) {
   return `<ul class="tracks">${k.sounds.map((f, i) => {
     const src = `audio/${k.name}/${f}.mp3`;
     const lab = soundLabel(f, k.sounds);
-    return `<li class="${f.startsWith("roundmvpanthem") ? "mvp" : ""}" data-src="${src}" data-title="${esc(lab)}" data-sub="${esc(k.title)}" data-cover="${k.image}">
+    return `<li class="${f.startsWith("roundmvpanthem") ? "mvp" : ""}" data-src="${esc(src)}" data-title="${esc(lab)}" data-sub="${esc(k.title)}" data-cover="${esc(k.image)}">
       <button class="play" aria-label="Play ${esc(lab)}">${PLAY}</button>
       <div class="label"><b>${esc(lab)}</b><small>${fmtTime(k.durations?.[i])}</small></div>
-      <a class="dl" href="${src}" download="${k.name}_${f}.mp3" aria-label="Download ${esc(lab)} (${k.sizes ? fmtSize(k.sizes[i]) : "mp3"})" title="Download mp3${k.sizes ? `, ${fmtSize(k.sizes[i])}` : ""}">${DL}</a></li>`;
+      <a class="dl" href="${esc(src)}" download="${esc(k.name)}_${esc(f)}.mp3" aria-label="Download ${esc(lab)} (${k.sizes ? fmtSize(k.sizes[i]) : "mp3"})" title="Download mp3${k.sizes ? `, ${fmtSize(k.sizes[i])}` : ""}">${DL}</a></li>`;
   }).join("")}</ul>`;
 }
 function kitHTML(k) {
   const total = (k.durations || []).reduce((a, b) => a + b, 0);
   return `<section class="kit" id="kit-${k.name}">
-    <a class="kit-cover" href="${itemHref(k)}" aria-label="${esc(k.title)} details"><img src="${k.image}" alt="" loading="lazy" width="200" height="200"></a>
+    <a class="kit-cover" href="${itemHref(k)}" aria-label="${esc(k.title)} details"><img src="${esc(k.image)}" alt="" loading="lazy" width="200" height="200"></a>
     <div>
       <h2 class="display">${esc(k.artist)}</h2>
       <div class="song">${esc(k.song)}</div>
@@ -389,7 +389,7 @@ async function showDetail(x) {
       const wpn = CAT.weapons.items.find(w => w.name === x.weapon);
       kicker = x.weapon_type;
       facts = fact("Weapon", wpn ? catLink("weapons", wpn.id, x.weapon_title) : esc(x.weapon_title)) +
-        fact("Finish", `${esc(x.paint)} <code>#${x.paint_index}, ${esc(x.paint_name)}</code>`) +
+        fact("Finish", `${esc(x.paint)} <code>#${num(x.paint_index)}, ${esc(x.paint_name)}</code>`) +
         fact("Float range", floatHTML(x)) +
         fact("Exteriors", esc(x.wears.join(", "))) +
         fact("StatTrak™", x.stattrak ? "Available" : "Not available") +
@@ -459,10 +459,10 @@ async function showDetail(x) {
   $("#d-body").innerHTML = `
     <button class="d-close" aria-label="Close">×</button>
     <div class="d-art">${img ? `<div style="position:relative;display:grid;place-items:center">
-        <img src="${img}" alt="${esc(x.title)}">
-        ${tints ? `<div id="d-tint" style="position:absolute;inset:0;mix-blend-mode:multiply;background:${tints[0][1]};-webkit-mask:url(${img}) center/contain no-repeat;mask:url(${img}) center/contain no-repeat"></div>` : ""}
+        <img src="${esc(img)}" alt="${esc(x.title)}">
+        ${tints ? `<div id="d-tint" style="position:absolute;inset:0;mix-blend-mode:multiply;background:${esc(tints[0][1])};-webkit-mask:url(${esc(img)}) center/contain no-repeat;mask:url(${esc(img)}) center/contain no-repeat"></div>` : ""}
       </div>` : ""}
-      ${tints ? `<div class="tints" role="group" aria-label="Spray colour">${tints.map(([n, h], i) => `<button data-tint="${h}" aria-pressed="${i === 0}" style="background:${h}" title="${esc(n.replace(/_/g, " "))}" aria-label="${esc(n.replace(/_/g, " "))}"></button>`).join("")}</div>` : ""}
+      ${tints ? `<div class="tints" role="group" aria-label="Spray colour">${tints.map(([n, h], i) => `<button data-tint="${esc(h)}" aria-pressed="${i === 0}" style="background:${esc(h)}" title="${esc(n.replace(/_/g, " "))}" aria-label="${esc(n.replace(/_/g, " "))}"></button>`).join("")}</div>` : ""}
     </div>
     <div class="d-info">
       ${kicker ? `<div class="d-kicker">${esc(kicker)}</div>` : ""}
@@ -471,7 +471,7 @@ async function showDetail(x) {
       ${x.description ? `<p class="d-desc">${esc(x.description)}</p>` : ""}
       <dl class="facts">${facts}</dl>
       <div class="d-actions">
-        ${img ? `<a class="btn gold" href="${img}" download="${fname}">Download image</a>` : ""}
+        ${img ? `<a class="btn gold" href="${esc(img)}" download="${esc(fname)}">Download image</a>` : ""}
         <button class="btn" data-copy>Copy link</button>
       </div>
       ${extra}
