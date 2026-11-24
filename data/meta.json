@@ -117,5 +117,5 @@
   "weapons": 76,
   "collections": 97
  },
- "game_build": "ClientVersion=2000948\nServerVersion=2000948\nPatchVersion=1.42.0.0\nProductName=cs2\nappID=730\nServerAppID=2347773\nSourceRevision=11259529\nVersionDate=Nov 19 2026\nVersionTime=15:48:39\n"
+ "game_build": "ClientVersion=2000950\nServerVersion=2000950\nPatchVersion=1.42.0.1\nProductName=cs2\nappID=730\nServerAppID=2347773\nSourceRevision=11268945\nVersionDate=Nov 23 2026\nVersionTime=14:44:25\n"
 }
