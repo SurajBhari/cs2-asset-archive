@@ -37,7 +37,7 @@ jobs:
       - name: Check GameTracking-CS2 for a new commit
         id: check
         run: |
-          head=$(git ls-remote "https://github.com/$TRACKER" HEAD | cut -f1 | tr -d '')
+          head=$(git ls-remote "https://github.com/$TRACKER" HEAD | cut -f1 | tr -d '[:space:]')
           if ! [[ "$head" =~ ^[0-9a-f]{40}$ ]]; then echo "Unexpected tracker HEAD: '$head'"; exit 1; fi
           last=$(curl -fsSL "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/.tracking-sha" || true)
           echo "tracker head: $head, last built: ${last:-none}"
