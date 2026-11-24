@@ -7,35 +7,57 @@
 <meta name="description" content="Every Counter-Strike 2 item pulled straight from the game files: all skins, stickers, music kits with every sound, charms, agents, cases, patches, graffiti, collectibles and more. Browse, play and download.">
 <meta property="og:title" content="CS2 Asset Archive">
 <meta property="og:description" content="Every CS2 skin, sticker, music kit, charm, agent and case, extracted from the game files.">
-<meta property="og:image" content="img/music/valve_cs2_01.webp">
-<link rel="icon" href="img/music/valve_cs2_01.webp">
+<meta property="og:image" content="img/containers/crate_community_33.webp">
+<meta name="theme-color" content="#161b23">
+<link rel="icon" href="img/containers/crate_community_33.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Saira:wdth,wght@50..125,400..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <a class="brand" href="#music"><span>CS2</span> Asset Archive</a>
-    <p class="lede" id="lede">Every item in Counter-Strike 2, pulled straight out of the game files.</p>
-    <nav id="tabs" aria-label="Categories"></nav>
+<header class="wrap">
+  <div class="mast">
+    <a class="brand" href="#music"><span class="display">CS2 Asset Archive</span></a>
+    <p id="stats">Every item in Counter-Strike 2, taken straight from the game files.</p>
   </div>
+
+  <section class="hero" aria-labelledby="hero-title">
+    <h1 class="display" id="hero-title">Every item in the game. Open a case to start.</h1>
+    <p class="intro">Skins, stickers, music kits, charms, agents and cases, all extracted from the CS2 game files. The reel below opens a real case with the game's real drop odds.</p>
+  </section>
 </header>
 
-<main class="wrap" id="view">
-  <div class="toolbar" id="toolbar">
-    <input id="q" type="search" placeholder="Search" autocomplete="off" aria-label="Search">
-    <div id="filters"></div>
-    <span id="count" class="count" aria-live="polite"></span>
+<div class="reel" id="reel" aria-hidden="true">
+  <div class="reel-track" id="reel-track"></div>
+  <div class="reel-mark"></div>
+</div>
+<div class="wrap">
+  <div class="reel-result">
+    <div class="won" id="won" aria-live="polite"><small>Opening a case…</small></div>
+    <button class="btn gold" id="spin" disabled>Open another case</button>
   </div>
+</div>
+
+<div class="rail-wrap" id="browse">
+  <div class="wrap">
+    <nav id="tabs" aria-label="Categories"></nav>
+    <div class="toolbar">
+      <input id="q" type="search" placeholder="Search" autocomplete="off" aria-label="Search">
+      <div id="filters"></div>
+      <span id="count" class="count" aria-live="polite"></span>
+    </div>
+  </div>
+</div>
+
+<main class="wrap" id="view">
   <div id="results"></div>
   <div id="more" aria-hidden="true"></div>
 </main>
 
 <footer class="wrap foot">
-  <p>Extracted from the Counter-Strike 2 game files (<code>pak01_dir.vpk</code>, <code>items_game.txt</code>, <code>csgo_english.txt</code>). Raw data is in <a href="https://github.com/SurajBhari/cs2-asset-archive/tree/main/data">/data</a> as JSON.</p>
-  <p>All art, audio and names belong to Valve and the respective artists, teams and players. Unofficial fan archive, not affiliated with Valve.</p>
+  <p>Extracted from CS2 build 2000948 (<code>pak01_dir.vpk</code>, <code>items_game.txt</code>, <code>csgo_english.txt</code>). All data is in <a href="https://github.com/SurajBhari/cs2-asset-archive/tree/main/data">/data</a> as JSON, and the extraction scripts are on <a href="https://github.com/SurajBhari/cs2-asset-archive">GitHub</a>.</p>
+  <p>Art, audio and names belong to Valve and the respective artists, teams and players. Unofficial fan archive, not affiliated with Valve.</p>
 </footer>
 
 <dialog id="detail" aria-labelledby="d-title">
@@ -43,6 +65,7 @@
 </dialog>
 
 <div id="player" class="player" hidden>
+  <img class="p-cover" id="p-cover" alt="">
   <button class="p-btn" id="p-toggle" aria-label="Pause"></button>
   <div class="p-info"><b id="p-title"></b><small id="p-sub"></small></div>
   <div class="p-bar" id="p-bar"><i></i></div>
