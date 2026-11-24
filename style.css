@@ -95,6 +95,19 @@ code { font: 500 .85em var(--font); font-variation-settings: "wdth" 85; color: v
 
 /* ---------- category rail ---------- */
 .rail-wrap { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--ink) 94%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); margin-top: 32px; }
+.rail { position: relative; }
+.rail-btn {
+  position: absolute; top: 10px; bottom: 2px; z-index: 2;
+  width: 64px; padding: 0; border: 0; cursor: pointer;
+  display: flex; align-items: center; color: var(--text);
+}
+.rail-btn[hidden] { display: none; }
+.rail-btn.prev { left: -2px; justify-content: flex-start; background: linear-gradient(90deg, var(--ink) 45%, transparent); }
+.rail-btn.next { right: -2px; justify-content: flex-end; background: linear-gradient(270deg, var(--ink) 45%, transparent); }
+.rail-btn span { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--plate-hi); border: 1px solid var(--rule); }
+.rail-btn:hover span { border-color: var(--gold); color: var(--gold); }
+.rail-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+#tabs { scroll-behavior: smooth; }
 #tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; padding: 10px 0 0; }
 #tabs::-webkit-scrollbar { display: none; }
 #tabs a {

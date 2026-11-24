@@ -1,13 +1,12 @@
 """Extract every music kit sound from vsnd_c and encode to MP3."""
 import json, os, struct, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
-sys.path.insert(0, r'C:/Users/suraj/Desktop/cs2_tools')
-from common import load, blocks
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common import load, blocks, SITE, WORK
 
-SITE = r'C:/Users/suraj/Desktop/cs2-kits-repo'
-BITRATE = os.environ.get('MP3_BITRATE', '96k')
+BITRATE = os.environ.get('MP3_BITRATE', '72k')
 vpk = load()
-sounds = json.load(open(r'C:/Users/suraj/Desktop/cs2_tools/sounds.json'))
+sounds = json.load(open(os.path.join(WORK, 'sounds.json')))
 
 
 def job(kit, name):

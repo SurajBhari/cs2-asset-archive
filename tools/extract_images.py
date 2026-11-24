@@ -1,12 +1,11 @@
 """Decode Source 2 .vtex_c panorama images to WebP."""
 import io, json, os, struct, sys
 from multiprocessing import Pool
-sys.path.insert(0, r'C:/Users/suraj/Desktop/cs2_tools')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import lz4.block
 from PIL import Image
-from common import load, blocks
+from common import load, blocks, SITE, WORK
 
-SITE = r'C:/Users/suraj/Desktop/cs2-kits-repo'
 QUALITY = int(os.environ.get('WEBP_Q', '80'))
 BPP = {4: 4, 28: 4}          # uncompressed formats: bytes per pixel
 BCN = {1: (1, 8), 2: (3, 16), 20: (7, 16), 27: (4, 8), 21: (5, 16)}  # format -> (pillow bcn n, bytes per 4x4 block)
@@ -88,7 +87,7 @@ def work(job):
 
 
 if __name__ == '__main__':
-    jobs = sorted(json.load(open(r'C:/Users/suraj/Desktop/cs2_tools/images.json')).items())
+    jobs = sorted(json.load(open(os.path.join(WORK, 'images.json'))).items())
     if len(sys.argv) > 1:
         jobs = [j for j in jobs if any(a in j[0] for a in sys.argv[1:])]
     errs = []
@@ -101,4 +100,4 @@ if __name__ == '__main__':
     print('done', len(jobs), 'errors', len(errs))
     for e in errs[:40]:
         print(e)
-    json.dump(errs, open(r'C:/Users/suraj/Desktop/cs2_tools/image_errors.json', 'w'), indent=0)
+    json.dump(errs, open(os.path.join(WORK, 'image_errors.json'), 'w'), indent=0)

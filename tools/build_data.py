@@ -1,12 +1,10 @@
 """Build the site's JSON catalogue from items_game.txt + csgo_english.txt."""
 import json, os, re, sys
 from collections import defaultdict
-sys.path.insert(0, r'C:/Users/suraj/Desktop/cs2_tools')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import kv
-from common import load
+from common import load, SITE, RAW, WORK, CS2_DIR
 
-SITE = r'C:/Users/suraj/Desktop/cs2-kits-repo'
-RAW = r'C:/Users/suraj/Desktop/cs2_tools/raw'
 
 g = kv.parse(open(f'{RAW}/items_game.txt', encoding='utf-8').read(), multi=True)['items_game']
 L = {k.lower(): v for k, v in kv.parse(open(f'{RAW}/csgo_english.txt', encoding='utf-8-sig').read())['lang']['Tokens'].items()}
@@ -427,9 +425,10 @@ out = {'skins': skins, 'stickers': stickers, 'patches': patches, 'graffiti': gra
 for k, v in out.items():
     json.dump(v, open(f'{SITE}/data/{k}.json', 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
     print(f'{k:12} {len(v):6}  with image: {sum(1 for x in v if x.get("image"))}')
+STEAM_INF = os.environ.get('STEAM_INF', os.path.join(CS2_DIR, 'steam.inf'))
 meta = {'events': events, 'rarities': RAR, 'counts': {k: len(v) for k, v in out.items()},
-        'game_build': open(r'D:/SteamLibrary/steamapps/common/Counter-Strike Global Offensive/game/csgo/steam.inf').read() if os.path.exists(r'D:/SteamLibrary/steamapps/common/Counter-Strike Global Offensive/game/csgo/steam.inf') else None}
+        'game_build': open(STEAM_INF).read() if os.path.exists(STEAM_INF) else None}
 json.dump(meta, open(f'{SITE}/data/meta.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
-json.dump(images, open(r'C:/Users/suraj/Desktop/cs2_tools/images.json', 'w'), indent=0)
-json.dump({k: v for k, v in sound_files.items()}, open(r'C:/Users/suraj/Desktop/cs2_tools/sounds.json', 'w'), indent=0)
+json.dump(images, open(os.path.join(WORK, 'images.json'), 'w'), indent=0)
+json.dump({k: v for k, v in sound_files.items()}, open(os.path.join(WORK, 'sounds.json'), 'w'), indent=0)
 print('images', len(images))

@@ -41,7 +41,11 @@
 
 <div class="rail-wrap" id="browse">
   <div class="wrap">
-    <nav id="tabs" aria-label="Categories"></nav>
+    <div class="rail">
+      <button class="rail-btn prev" id="rail-prev" aria-label="Show earlier categories" hidden><span><svg viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></svg></span></button>
+      <nav id="tabs" aria-label="Categories"></nav>
+      <button class="rail-btn next" id="rail-next" aria-label="Show more categories" hidden><span><svg viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></svg></span></button>
+    </div>
     <div class="toolbar">
       <input id="q" type="search" placeholder="Search" autocomplete="off" aria-label="Search">
       <div id="filters"></div>
@@ -56,7 +60,7 @@
 </main>
 
 <footer class="wrap foot">
-  <p>Extracted from CS2 build 2000948 (<code>pak01_dir.vpk</code>, <code>items_game.txt</code>, <code>csgo_english.txt</code>). All data is in <a href="https://github.com/SurajBhari/cs2-asset-archive/tree/main/data">/data</a> as JSON, and the extraction scripts are on <a href="https://github.com/SurajBhari/cs2-asset-archive">GitHub</a>.</p>
+  <p>Extracted from CS2 build <span id="build">2000948</span> (<code>pak01_dir.vpk</code>, <code>items_game.txt</code>, <code>csgo_english.txt</code>). All data is in <a href="https://github.com/SurajBhari/cs2-asset-archive/tree/main/data">/data</a> as JSON, and the extraction scripts are on <a href="https://github.com/SurajBhari/cs2-asset-archive">GitHub</a>.</p>
   <p>Art, audio and names belong to Valve and the respective artists, teams and players. Unofficial fan archive, not affiliated with Valve.</p>
 </footer>
 

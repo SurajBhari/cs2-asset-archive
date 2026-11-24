@@ -45,7 +45,18 @@ Source: CS2 build 2000948 (patch 1.42.0.0, 19 Nov 2026). The scripts are in [`to
 4. `extract_audio.py` unpacks `.vsnd_c` sounds (MP3 streams and raw PCM16, both the old binary header and the newer KV3 one) and re-encodes them with ffmpeg.
 5. `durations.py` adds track lengths to `music.json`.
 
-Paths in the scripts point at a local Steam library; change `common.py` and the `SITE` constants to run them yourself. Needs Python 3, Pillow, `lz4` and ffmpeg.
+To run them yourself, point `CS2_DIR` at your `game/csgo` folder (defaults are in `common.py`). Needs Python 3, Pillow, `lz4` and ffmpeg.
+
+## Staying up to date
+
+[`.github/workflows/update.yml`](.github/workflows/update.yml) checks [SteamTracking/GameTracking-CS2](https://github.com/SteamTracking/GameTracking-CS2) every 30 minutes. When its head commit changes (that repo commits on every CS2 update), the workflow:
+
+1. rebuilds `data/` from the new `items_game.txt` and `csgo_english.txt`,
+2. downloads `pak01_dir.vpk` from Steam with [DepotDownloader](https://github.com/SteamRE/DepotDownloader) (anonymous login),
+3. works out which `pak01_NNN.vpk` chunks hold images or sounds that aren't on the site yet (`tools/plan_downloads.py`) and downloads only those,
+4. extracts them and commits.
+
+The last tracker commit it built from is in `.tracking-sha`. You can also run it by hand from the Actions tab. Assets that already exist are not re-extracted, so if Valve redraws an existing image, delete it and run the workflow.
 
 ## Legal
 

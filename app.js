@@ -202,7 +202,25 @@ async function route() {
 function renderTabs(counts) {
   $("#tabs").innerHTML = CATS.map(c => `<a href="#${c.id}" data-cat="${c.id}"><img src="${c.icon}" alt="" loading="lazy"><span>${c.label}</span><small>${counts ? (counts[c.id] ?? 0).toLocaleString() : "&nbsp;"}</small></a>`).join("");
   markTab();
+  updateRail();
 }
+/* Category rail: arrow buttons appear only when there are tabs hidden off that side. */
+function updateRail() {
+  const r = $("#tabs");
+  $("#rail-prev").hidden = r.scrollLeft <= 4;
+  $("#rail-next").hidden = r.scrollLeft + r.clientWidth >= r.scrollWidth - 4;
+}
+$("#rail-prev").onclick = () => $("#tabs").scrollBy({ left: -$("#tabs").clientWidth * .7 });
+$("#rail-next").onclick = () => $("#tabs").scrollBy({ left: $("#tabs").clientWidth * .7 });
+$("#tabs").addEventListener("scroll", updateRail, { passive: true });
+$("#tabs").addEventListener("wheel", e => {
+  const r = e.currentTarget;
+  if (r.scrollWidth <= r.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+  e.preventDefault();
+  r.scrollBy({ left: e.deltaY, behavior: "instant" });
+}, { passive: false });
+addEventListener("resize", updateRail);
+
 function markTab() {
   document.querySelectorAll("#tabs a").forEach(a => {
     if (a.dataset.cat === state.cat) {
@@ -528,6 +546,8 @@ loadFile("meta").then(m => {
   renderTabs(counts);
   const total = Object.entries(counts).filter(([k]) => k !== "keys").reduce((a, [, v]) => a + v, 0);
   const songs = (m.counts.music || 0);
+  const build = (m.game_build || "").match(/ClientVersion=(\d+)/);
+  if (build) $("#build").textContent = build[1];
   $("#stats").innerHTML = `<b>${total.toLocaleString()}</b> items and <b>${songs}</b> music kits from Counter-Strike 2, taken straight from the game files.`;
 });
 route();

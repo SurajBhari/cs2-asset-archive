@@ -1,0 +1,126 @@
+name: Update from CS2
+
+# SteamTracking/GameTracking-CS2 commits every time Valve ships a CS2 update.
+# GitHub can't notify us about pushes to someone else's repo, so poll it and
+# rebuild only when its head commit differs from the one we last built from.
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Rebuild even if GameTracking-CS2 hasn't changed"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: update-from-cs2
+  cancel-in-progress: false
+
+env:
+  TRACKER: SteamTracking/GameTracking-CS2
+  WORK_DIR: ${{ github.workspace }}/../work
+  DL_DIR: ${{ github.workspace }}/../depot
+  CS2_DIR: ${{ github.workspace }}/../depot/game/csgo
+  SITE_DIR: ${{ github.workspace }}
+  STEAM_INF: ${{ github.workspace }}/../work/raw/steam.inf
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check GameTracking-CS2 for a new commit
+        id: check
+        run: |
+          head=$(git ls-remote "https://github.com/$TRACKER" HEAD | cut -f1)
+          last=$(curl -fsSL "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/.tracking-sha" || true)
+          echo "tracker head: $head, last built: ${last:-none}"
+          echo "sha=$head" >> "$GITHUB_OUTPUT"
+          if [ "$head" = "$last" ] && [ "${{ inputs.force }}" != "true" ]; then
+            echo "Nothing new."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.run == 'true'
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        if: steps.check.outputs.run == 'true'
+        with:
+          python-version: "3.12"
+
+      - name: Install tools
+        if: steps.check.outputs.run == 'true'
+        run: |
+          pip install --quiet pillow lz4
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
+          mkdir -p "$WORK_DIR/raw" "$DL_DIR" "$RUNNER_TEMP/dd"
+          curl -fsSL -o "$RUNNER_TEMP/dd.zip" https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_3.4.0/DepotDownloader-linux-x64.zip
+          unzip -q "$RUNNER_TEMP/dd.zip" -d "$RUNNER_TEMP/dd"
+          chmod +x "$RUNNER_TEMP/dd/DepotDownloader"
+
+      - name: Fetch item text files from GameTracking-CS2
+        if: steps.check.outputs.run == 'true'
+        run: |
+          base="https://raw.githubusercontent.com/$TRACKER/${{ steps.check.outputs.sha }}/game/csgo"
+          curl -fsSL -o "$WORK_DIR/raw/items_game.txt" "$base/pak01_dir/scripts/items/items_game.txt"
+          curl -fsSL -o "$WORK_DIR/raw/csgo_english.txt" "$base/pak01_dir/resource/csgo_english.txt"
+          curl -fsSL -o "$WORK_DIR/raw/steam.inf" "$base/steam.inf"
+          cat "$WORK_DIR/raw/steam.inf"
+
+      - name: Download the VPK index from Steam
+        if: steps.check.outputs.run == 'true'
+        run: |
+          printf '%s\n' 'regex:^game[\\/]csgo[\\/]pak01_dir\.vpk$' > "$RUNNER_TEMP/dir.txt"
+          "$RUNNER_TEMP/dd/DepotDownloader" -app 730 -depot 2347770 -filelist "$RUNNER_TEMP/dir.txt" -dir "$DL_DIR" -max-downloads 16
+          ls -la "$CS2_DIR"
+
+      - name: Rebuild the item data
+        if: steps.check.outputs.run == 'true'
+        run: python tools/build_data.py
+
+      - name: Download only the archive chunks that hold new assets
+        if: steps.check.outputs.run == 'true'
+        run: |
+          python tools/plan_downloads.py > "$RUNNER_TEMP/chunks.txt"
+          if [ -s "$RUNNER_TEMP/chunks.txt" ]; then
+            cat "$RUNNER_TEMP/chunks.txt"
+            "$RUNNER_TEMP/dd/DepotDownloader" -app 730 -depot 2347770 -filelist "$RUNNER_TEMP/chunks.txt" -dir "$DL_DIR" -max-downloads 16
+          fi
+
+      - name: Extract new images and sounds
+        if: steps.check.outputs.run == 'true'
+        run: |
+          python tools/extract_images.py
+          python tools/extract_audio.py
+          python tools/durations.py
+
+      - name: Commit and publish
+        if: steps.check.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "${{ steps.check.outputs.sha }}" > .tracking-sha
+          build=$(grep -oP 'ClientVersion=\K\d+' "$STEAM_INF" || echo unknown)
+          git add -A data img audio .tracking-sha
+          if git diff --cached --quiet -- data img audio; then
+            msg="Checked CS2 build $build: no item changes"
+          else
+            msg="Update to CS2 build $build"
+            git diff --cached --stat -- data | tail -1
+            echo "New images: $(git diff --cached --name-only --diff-filter=A -- img | wc -l), new sounds: $(git diff --cached --name-only --diff-filter=A -- audio | wc -l)"
+          fi
+          git config user.name "SurajBhari"
+          git config user.email "45149585+SurajBhari@users.noreply.github.com"
+          git commit -q -m "$msg"
+          git push
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" > /dev/null || echo "Pages build request failed (the push may already have started one)."

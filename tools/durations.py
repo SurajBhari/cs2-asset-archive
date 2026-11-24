@@ -1,6 +1,7 @@
-import json, subprocess, os
+import json, subprocess, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common import SITE
 from concurrent.futures import ThreadPoolExecutor
-SITE = r'C:/Users/suraj/Desktop/cs2-kits-repo'
 m = json.load(open(f'{SITE}/data/music.json', encoding='utf-8'))
 def dur(p):
     r = subprocess.run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', p], capture_output=True, text=True)

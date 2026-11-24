@@ -1,20 +1,32 @@
-import sys, pickle, struct
-sys.path.insert(0, r'C:/Users/suraj/Desktop/cs2_tools')
-from vpk import VPK
+"""Shared paths and Source 2 resource helpers. Paths can be overridden with environment variables."""
+import os, struct, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from vpk import VPK  # noqa: E402
+
+# Folder holding pak01_dir.vpk (and whichever pak01_NNN.vpk chunks are present).
+CS2_DIR = os.environ.get('CS2_DIR', r'D:/SteamLibrary/steamapps/common/Counter-Strike Global Offensive/game/csgo')
+# The website repo (this repo's root by default).
+SITE = os.environ.get('SITE_DIR', os.path.dirname(HERE))
+# Scratch space: raw text files, job lists, index cache.
+WORK = os.environ.get('WORK_DIR', os.path.join(HERE, '.work'))
+RAW = os.path.join(WORK, 'raw')
+os.makedirs(RAW, exist_ok=True)
+
+
 def load():
-    v = VPK.__new__(VPK)
-    v.dir_path = r'D:/SteamLibrary/steamapps/common/Counter-Strike Global Offensive/game/csgo/pak01_dir.vpk'
-    v.base = v.dir_path[:-8]
-    v.entries, v.header_len, v.tree_size = pickle.load(open(r'C:/Users/suraj/Desktop/cs2_tools/index.pkl', 'rb'))
-    return v
+    """Open pak01_dir.vpk (parses its ~145k-entry directory tree; takes a couple of seconds)."""
+    return VPK(os.path.join(CS2_DIR, 'pak01_dir.vpk'))
+
 
 def blocks(d):
+    """Return (header size, {block name: (absolute offset, size)}) for a compiled Source 2 resource."""
     size, hv, ver, boff, bcnt = struct.unpack_from('<IHHII', d, 0)
     out = {}
-    base = 8
     for i in range(bcnt):
-        p = base + boff + i*12
-        name = d[p:p+4].decode()
-        off, sz = struct.unpack_from('<II', d, p+4)
-        out[name] = (p+4+off, sz)
+        p = 8 + boff + i * 12
+        name = d[p:p + 4].decode()
+        off, sz = struct.unpack_from('<II', d, p + 4)
+        out[name] = (p + 4 + off, sz)
     return size, out
